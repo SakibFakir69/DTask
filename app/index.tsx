@@ -1,11 +1,13 @@
+import OnboardingUI from "@/onboarding/OnboardingUI";
 import { Text, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function Index() {
   return (
-    <View
-      
-    >
-      <Text className="text-3xl text-green-400">Edit app/index.tsx to edit this screen.</Text>
-    </View>
+    <SafeAreaProvider>
+      <View className="">
+        <OnboardingUI />
+      </View>
+    </SafeAreaProvider>
   );
 }
