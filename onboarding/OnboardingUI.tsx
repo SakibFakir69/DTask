@@ -11,9 +11,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Onboarding from "react-native-onboarding-swiper";
 import { LinearGradient } from "expo-linear-gradient";
 import { onBoardingStyle } from "@/styles/onboardinng/onBoarding";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
-
-// add three image 
+// add three image
 // add skip and next function
 
 export default function OnboardingUI() {
@@ -22,41 +23,44 @@ export default function OnboardingUI() {
 
   // skip button
   // next button
- const NextButton = ({ ...props }) => (
-    <TouchableOpacity 
-      {...props} 
-     style={onBoardingStyle.nextButton}
-    >
+  const NextButton = ({ ...props }) => (
+    <TouchableOpacity {...props} style={onBoardingStyle.nextButton}>
       <Text style={onBoardingStyle.buttonText}>Next</Text>
     </TouchableOpacity>
   );
 
   const SkipButton = ({ ...props }) => (
-    <TouchableOpacity 
-      {...props} 
-      style={onBoardingStyle.skipButton}
-     
-    >
+    <TouchableOpacity {...props} style={onBoardingStyle.skipButton}>
       <Text style={onBoardingStyle.skipText}>Skip</Text>
     </TouchableOpacity>
   );
+// done
+  const handelDone = async()=>{
+    try {
+      await AsyncStorage.setItem("hasOnboard","true");
+      router.push('/(auth)/login');
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
   return (
     <SafeAreaView style={{ height: height, backgroundColor: "#fff" }}>
-      <LinearGradient colors={["#0F2321", "#0D3935"]} style={{ flex: 1 }}>
+      <LinearGradient colors={["#0F2321", "#0D3935"]}
+      
+      style={{ flex: 1 }}
+      
+      >
+
         <Onboarding
           ref={onBoardingUiRef}
           SkipButtonComponent={SkipButton}
           NextButtonComponent={NextButton}
           bottomBarHighlight={false}
-
-
-          onDone={()=> console.log("done")}
-          onSkip={()=>{
-            console.log("skip")
-          }}
-          
+          onDone={handelDone}
+          onSkip={handelDone}
           titleStyles={{
-            color: "#ccc",
+            color: "#fff",
             fontSize: 26,
             fontWeight: "bold",
             marginTop: -90,
@@ -78,27 +82,29 @@ export default function OnboardingUI() {
           pages={[
             {
               backgroundColor: "transparent",
-              image: (
-                <Image
-                  source={require("../assets/Gemini_Generated_Image_wxh97hwxh97hwxh9.png")}
-                  style={{ height: height * 0.45, width: width - 8 }}
-                  resizeMode="contain"
-                />
-              ),
-              title: "Premium Experience",
-              subtitle: "Beautiful dark gradient background",
+              image: <View></View>,
+              title: "Welcome",
+              subtitle: "Organize your work. Simplify your life",
+            
+             
             },
             {
               backgroundColor: "transparent",
               image: (
                 <Image
-                  source={require("../assets/Gemini_Generated_Image_xby4qvxby4qvxby4.png")}
+                  source={require("../assets/undraw_to-do-app_esjl-removebg-preview.png")}
                   style={{ height: height * 0.45, width: width - 8 }}
                   resizeMode="contain"
                 />
               ),
-              title: "Stay Focused",
-              subtitle: "Clean and modern design",
+              title: "Stay Organized",
+              subtitle: "Simple tools for better productivity",
+            },
+            {
+              backgroundColor: "transparent",
+              image:<View></View>,
+              title: "Keep Moving",
+              subtitle: "Consistent progress, every day",
             },
           ]}
         />
@@ -106,5 +112,3 @@ export default function OnboardingUI() {
     </SafeAreaView>
   );
 }
-
-
