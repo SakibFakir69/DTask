@@ -6,9 +6,10 @@ import React from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function index() {
-    const hasOnboard =AsyncStorage.getItem("hasOnboard");
-    console.log(hasOnboard);
     
+    const hasOnboard =AsyncStorage.getItem("hasOnboard");
+    console.log(hasOnboard , ' onborading check');
+
   return (
     <View>
       <Text>index</Text>

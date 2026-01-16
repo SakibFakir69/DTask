@@ -38,7 +38,7 @@ export default function OnboardingUI() {
   const handelDone = async()=>{
     try {
       await AsyncStorage.setItem("hasOnboard","true");
-      router.push('/(auth)/login');
+      router.push('/(auth)/register');
     } catch (error) {
       console.log(error);
       
