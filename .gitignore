@@ -45,3 +45,4 @@ app-example
 # vs code
 .vscode
 .*vscode
+.env

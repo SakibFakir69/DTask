@@ -3,10 +3,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-export default function stats() {
+export default function Stats() {
   return (
     <View>
-      <Text>stats</Text>
+      <Text>S</Text>
     </View>
   )
 }

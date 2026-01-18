@@ -9,3 +9,7 @@ BUILDING MY DREAM NOT JUST SIMPLE PROJECT -> INSHALLA SUCCSSFULLY FINISHED
 <!-- screen  -->
 1. on boarding image 
 2. then auth page
+
+
+<!-- 1/18/26 -->
+<!-- explore sql lite , fix onboarding , token , and auth  -->

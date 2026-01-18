@@ -1,49 +1,50 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
 
-        // 🎨 Tab bar style
         tabBarStyle: {
-          height: Platform.OS === "ios" ? 85 : 65,
-          paddingBottom: Platform.OS === "ios" ? 20 : 8,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom,
           paddingTop: 8,
           borderTopWidth: 0,
-          elevation: 8,
+          elevation: 10,
+          backgroundColor: "#0F2321",
         },
+        tabBarActiveTintColor: "#00FFA3",
 
-        tabBarActiveTintColor: "#0D3935",
-        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarInactiveTintColor: "#6FAFA6",
 
-        // ✨ Animation
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "600",
         },
+
+        tabBarHideOnKeyboard: true,
       }}
     >
-      {/* HOME */}
       <Tabs.Screen
-        name="Home"
+        name="index"
         options={{
           title: "Home",
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}
-              size={focused ? size + 2 : size}
+              size={24}
               color={color}
             />
           ),
         }}
       />
 
-      {/* NOTES */}
       <Tabs.Screen
         name="Note"
         options={{
@@ -51,14 +52,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "document-text" : "document-text-outline"}
-              size={focused ? size + 2 : size}
+              size={24}
               color={color}
             />
           ),
         }}
       />
 
-      {/* STATS */}
       <Tabs.Screen
         name="Stats"
         options={{
@@ -66,14 +66,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "stats-chart" : "stats-chart-outline"}
-              size={focused ? size + 2 : size}
+              size={24}
               color={color}
             />
           ),
         }}
       />
 
-      {/* SETTINGS */}
       <Tabs.Screen
         name="Setting"
         options={{
@@ -81,7 +80,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? "settings" : "settings-outline"}
-              size={focused ? size + 2 : size}
+              size={24}
               color={color}
             />
           ),

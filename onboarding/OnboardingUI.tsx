@@ -13,6 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { onBoardingStyle } from "@/styles/onboardinng/onBoarding";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import { setOnboardingDone } from "@/utils/onBoarding";
 
 // add three image
 // add skip and next function
@@ -37,8 +38,10 @@ export default function OnboardingUI() {
 // done
   const handelDone = async()=>{
     try {
-      await AsyncStorage.setItem("hasOnboard","true");
-      router.push('/(auth)/register');
+      await setOnboardingDone()
+
+      router.replace('/(auth)/register');
+      
     } catch (error) {
       console.log(error);
       

@@ -1,18 +1,19 @@
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ScrollView, 
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
   Alert,
-  ActivityIndicator 
-} from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+  ActivityIndicator,
+} from "react-native";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { ConnectionDB } from "@/DB/database";
-import { signUpSchema, SignUpFormData } from '@/zod/auth/auth';
-import { router } from 'expo-router';
+import { signUpSchema, SignUpFormData } from "@/zod/auth/auth";
+import { router } from "expo-router";
+import { createUserTable } from "@/DB/modules/auth/createUser";
 
 const RegistrationPage = () => {
   const {
@@ -21,17 +22,30 @@ const RegistrationPage = () => {
     formState: { errors, isSubmitting },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { name: '', email: '', password: '', pin: '' }
+    defaultValues: { name: "", email: "", password: "", pin: "" },
   });
+ 
 
   const onSubmit = async (data: SignUpFormData) => {
+
+    createUserTable();
     try {
+      console.log(data);
+
+      const pinValue = parseInt(data.pin);
+      if (isNaN(pinValue)) {
+        Alert.alert("Invalid PIN", "Please enter a valid 4-digit PIN");
+        return;
+      }
+
       const db = await ConnectionDB();
-      await db.executeSql(
+      await db.runAsync(
         `INSERT INTO Users (name, email, password, pin) VALUES (?, ?, ?, ?)`,
-        [data.name, data.email, data.password, parseInt(data.pin)]
+        [data.name, data.email, data.password, pinValue],
       );
       Alert.alert("Success", "Account created successfully!");
+      router.push('/(auth)/login')
+      
     } catch (error) {
       console.error("Registration error:", error);
       Alert.alert("Error", "Email already exists or database error.");
@@ -39,9 +53,11 @@ const RegistrationPage = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-[#0a1a1a]">
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      className="bg-[#0a1a1a]"
+    >
       <View className="items-center flex-1 p-6">
-        
         {/* Header Section */}
         <View className="items-center mt-12 mb-8">
           <View className="w-16 h-16 bg-[#1a2e2e] rounded-full items-center justify-center mb-4">
@@ -58,7 +74,6 @@ const RegistrationPage = () => {
 
         {/* Form Section */}
         <View className="w-full max-w-sm">
-          
           {/* Name Field */}
           <Text className="mb-1 ml-1 text-sm text-gray-300">Full Name</Text>
           <Controller
@@ -66,7 +81,7 @@ const RegistrationPage = () => {
             name="name"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className={`bg-[#162929] border ${errors.name ? 'border-red-400' : 'border-[#2a4545]'} rounded-2xl p-4 text-white mb-3 focus:border-[#00ffa3]`}
+                className={`bg-[#162929] border ${errors.name ? "border-red-400" : "border-[#2a4545]"} rounded-2xl p-4 text-white mb-3 focus:border-[#00ffa3]`}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -75,7 +90,11 @@ const RegistrationPage = () => {
               />
             )}
           />
-          {errors.name && <Text className="mb-2 ml-1 text-xs text-red-400">{errors.name.message}</Text>}
+          {errors.name && (
+            <Text className="mb-2 ml-1 text-xs text-red-400">
+              {errors.name.message}
+            </Text>
+          )}
 
           {/* Email Field */}
           <Text className="mb-1 ml-1 text-sm text-gray-300">Email</Text>
@@ -84,7 +103,7 @@ const RegistrationPage = () => {
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className={`bg-[#162929] border ${errors.email ? 'border-red-400' : 'border-[#2a4545]'} rounded-2xl p-4 text-white mb-3 focus:border-[#00ffa3]`}
+                className={`bg-[#162929] border ${errors.email ? "border-red-400" : "border-[#2a4545]"} rounded-2xl p-4 text-white mb-3 focus:border-[#00ffa3]`}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -95,7 +114,11 @@ const RegistrationPage = () => {
               />
             )}
           />
-          {errors.email && <Text className="mb-2 ml-1 text-xs text-red-400">{errors.email.message}</Text>}
+          {errors.email && (
+            <Text className="mb-2 ml-1 text-xs text-red-400">
+              {errors.email.message}
+            </Text>
+          )}
 
           <View className="flex-row mb-3 space-x-4">
             {/* Password Field */}
@@ -106,7 +129,7 @@ const RegistrationPage = () => {
                 name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className={`bg-[#162929] border ${errors.password ? 'border-red-400' : 'border-[#2a4545]'} rounded-2xl p-4 text-white focus:border-[#00ffa3]`}
+                    className={`bg-[#162929] border ${errors.password ? "border-red-400" : "border-[#2a4545]"} rounded-2xl p-4 text-white focus:border-[#00ffa3]`}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -120,13 +143,15 @@ const RegistrationPage = () => {
 
             {/* PIN Field */}
             <View className="w-24">
-              <Text className="mb-1 ml-1 text-sm text-center text-gray-300">PIN</Text>
+              <Text className="mb-1 ml-1 text-sm text-center text-gray-300">
+                PIN
+              </Text>
               <Controller
                 control={control}
                 name="pin"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className={`bg-[#162929] border ${errors.pin ? 'border-red-400' : 'border-[#2a4545]'} rounded-2xl p-4 text-white text-center focus:border-[#00ffa3]`}
+                    className={`bg-[#162929] border ${errors.pin ? "border-red-400" : "border-[#2a4545]"} rounded-2xl p-4 text-white text-center focus:border-[#00ffa3]`}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -146,7 +171,7 @@ const RegistrationPage = () => {
           )}
 
           {/* Submit Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             activeOpacity={0.7}
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
@@ -161,11 +186,13 @@ const RegistrationPage = () => {
         </View>
 
         {/* Footer */}
-        <TouchableOpacity className="flex-row mt-8" onPress={()=> router.push('/(auth)/login')}>
+        <TouchableOpacity
+          className="flex-row mt-8"
+          onPress={() => router.push("/(auth)/login")}
+        >
           <Text className="text-gray-400">Already have an account? </Text>
           <Text className="text-[#00ffa3] font-bold">Sign In</Text>
         </TouchableOpacity>
-
       </View>
     </ScrollView>
   );
