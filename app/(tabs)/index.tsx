@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CheckCircle2, Circle, Plus, LayoutGrid, FileText, BarChart2, Settings } from "lucide-react-native";
 import CurrentDate from "@/utils/day";
+import { router } from "expo-router";
 
 
 export default function Index() {
@@ -90,7 +91,7 @@ export default function Index() {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <TouchableOpacity className="absolute bottom-24 right-6 bg-[#FF724C] w-14 h-14 rounded-full items-center justify-center shadow-lg">
+      <TouchableOpacity onPress={()=> router.push('/task/AddTask')} className="absolute bottom-24 right-6 bg-[#FF724C] w-14 h-14 rounded-full items-center justify-center shadow-lg">
         <Plus color="white" size={30} />
       </TouchableOpacity>
 
