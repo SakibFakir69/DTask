@@ -58,6 +58,20 @@ export default function TabLayout() {
           ),
         }}
       />
+      {/* category */}
+      <Tabs.Screen
+        name="Category"
+        options={{
+          title: "Category",
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "grid" : "grid-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
 
       <Tabs.Screen
         name="Stats"

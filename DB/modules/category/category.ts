@@ -4,11 +4,12 @@ export const createCategory = async () => {
   try {
     const db = await ConnectionDB();
 
-    await db.executeSql(`
+    await db.execAsync(`
       CREATE TABLE IF NOT EXISTS Categorys (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         color TEXT,
+        background TEXT,
         created_at TEXT DEFAULT (datetime('now')),
         updated_at TEXT DEFAULT (datetime('now'))
       );

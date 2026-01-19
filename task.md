@@ -11,5 +11,5 @@ BUILDING MY DREAM NOT JUST SIMPLE PROJECT -> INSHALLA SUCCSSFULLY FINISHED
 2. then auth page
 
 
-<!-- 1/18/26 -->
-<!-- explore sql lite , fix onboarding , token , and auth  -->
+<!-- 1/19/26 -->
+<!-- add task  -> db -> notification/alaram/message time finished -->

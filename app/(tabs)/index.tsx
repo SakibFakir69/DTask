@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CheckCircle2, Circle, Plus, LayoutGrid, FileText, BarChart2, Settings } from "lucide-react-native";
 import CurrentDate from "@/utils/day";
 import { router } from "expo-router";
-
+import { TaskCard } from "../components/TaskCard";
+import {  Plus, BarChart2 } from "lucide-react-native";
 
 export default function Index() {
   return (
@@ -38,7 +38,7 @@ export default function Index() {
         </View>
 
         {/* Daily Progress Card */}
-        <View className="bg-[#0F2321] mt-6 p-6 rounded-3xl flex-row items-center">
+        <View className="bg-[#1a3836] mt-6 p-6 rounded-3xl flex-row items-center">
           
           <View className="relative items-center justify-center w-20 h-20 border-4 border-[#2D9B78] rounded-full">
              <Text className="text-lg font-bold text-white">65%</Text>
@@ -101,34 +101,3 @@ export default function Index() {
   );
 }
 
-// Sub-components
-const TaskCard = ({ label, title, progress, subtasks, completed = false }:any) => (
-  
-  <View className="bg-[#1a3836] p-5 rounded-3xl mb-4">
-    
-    <View className="flex-row items-start justify-between">
-      <View>
-        <Text  className="text-[10px] text-yellow-200 font-black tracking-tighter mb-1"> {label}</Text>
-        <Text className="text-lg font-bold text-white">{title}</Text>
-      </View>
-      {completed ? <CheckCircle2 color="#2D9B78" size={24} /> : <Circle color="#333" size={24} />}
-    </View>
-    
-    <View className="mt-4">
-        <View className="flex-row justify-between mb-2">
-            <Text className="text-xs text-[#108b7f]">{subtasks} subtasks</Text>
-            <Text className="text-xs text-gray-500">{progress}%</Text>
-        </View>
-        <View className="h-1.5 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
-            <View style={{ width: `${progress}%`, backgroundColor: "red" }} className="h-full rounded-full" />
-        </View>
-    </View>
-  </View>
-);
-
-const NavItem = ({ icon, label, active = false }:any) => (
-  <View className="items-center">
-    {icon}
-    <Text className={`text-[10px] mt-1 ${active ? 'text-[#2D9B78]' : 'text-gray-500'}`}>{label}</Text>
-  </View>
-);
