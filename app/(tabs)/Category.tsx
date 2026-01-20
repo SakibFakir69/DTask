@@ -4,7 +4,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { router } from 'expo-router';
 import { X, Check, Palette, Type } from 'lucide-react-native';
 import {PRESET_COLORS} from '@/constant/consant'
-import { createCategoryTable } from '@/DB/modules/category/category';
+import { addCreateCategory, createCategoryTable } from '@/DB/modules/category/category';
+import Toast from 'react-native-toast-message';
 
 
 
@@ -24,9 +25,29 @@ export default function CreateCategory() {
   const onSubmit = async (data: CategoryForm) => {
     try {
       await createCategoryTable();
+      const { color, name  } = data;
+      
+      await addCreateCategory({color,name})
+
+      Toast.show({
+        type:"success",
+        text1:"Category created",
+        text2:"Saved successfully",
+        
+      })
+      router.back();
       
       
-    } catch (error) {
+    } catch (error:any) {
+
+      Toast.show({
+        type:"error",
+        text1:`${error?.name}`,
+        text2:`${error?.message}`
+      })
+      console.log("error on category", error);
+      
+      
       
     }
     router.back();

@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from "react-native";
 import OnboardingUI from "@/onboarding/OnboardingUI";
 import { getToken } from "@/utils/authSecure";
 import { getOnboardingDone } from "@/utils/onBoarding";
+import Toast from 'react-native-toast-message';
 
 
 type AppState = "loading" | "onboarding" | "auth" | "tabs";
@@ -52,6 +53,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <Slot />
+      <Toast/>
     </SafeAreaProvider>
   );
 }
