@@ -29,6 +29,7 @@ import {
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addTask } from "@/DB/modules/tasks/task.add";
 import { createTaskTables } from "@/DB/modules/tasks/task";
+import Toast from "react-native-toast-message";
 
 // Schema types
 type FormData = {
@@ -135,14 +136,18 @@ export default function AddTask() {
         due_date: new Date().toISOString(),
         subtasks: subtasks,
       });
-
+      Toast.show({
+        type: "success",
+        text1: "Task Created Successfully",
+      });
       router.back();
-    } catch (error) {
+    } catch (error:any) {
       console.error("Submission Error:", error);
-      Alert.alert(
-        "Error",
-        "Could not save task. Please check your database connection.",
-      );
+     
+      Toast.show({
+        type:"error",
+        text1:`${error.message}`
+      })
     } finally {
       setLoading(false);
     }

@@ -12,4 +12,4 @@ BUILDING MY DREAM NOT JUST SIMPLE PROJECT -> INSHALLA SUCCSSFULLY FINISHED
 
 
 <!-- 1/19/26 -->
-<!-- add task  -> db -> notification/alaram/message time finished -->
+<!-- add task  -> db -> details -> notification/alaram/message time finished -->

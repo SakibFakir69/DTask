@@ -35,7 +35,7 @@ export default function CreateCategory() {
         text2:"Saved successfully",
         
       })
-      router.back();
+  
       
       
     } catch (error:any) {
