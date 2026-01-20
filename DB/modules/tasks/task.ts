@@ -3,12 +3,9 @@ import { ConnectionDB } from "@/DB/database";
 export const createTaskTables = async () => {
   try {
     const db = await ConnectionDB();
-
     // Enable Foreign Keys (Required for DELETE CASCADE)
     await db.execAsync(`PRAGMA foreign_keys = ON;`);
-
     await db.execAsync(`
-    
       CREATE TABLE IF NOT EXISTS Tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
