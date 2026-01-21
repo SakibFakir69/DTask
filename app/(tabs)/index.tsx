@@ -14,6 +14,7 @@ import { Plus, BarChart2 } from "lucide-react-native";
 import { taskUserDataRetrive } from "@/DB/modules/tasks/task.retrive";
 
 
+
 export default function Index() {
   const [data, setData] = useState<any[]>([]);
 
@@ -91,6 +92,7 @@ export default function Index() {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <TaskCard
+            id={item.id}
               label={item.category || "TASK"}
               title={item.title}
               progress={item.progress || 0}
