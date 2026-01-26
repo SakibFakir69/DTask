@@ -27,12 +27,13 @@ import {
   Clock,
 } from "lucide-react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { addTask } from "@/DB/modules/tasks/task.add";
+import { addSubTask, addTask } from "@/DB/modules/tasks/task.add";
 import { createTaskTables } from "@/DB/modules/tasks/task";
 import Toast from "react-native-toast-message";
 
 // Schema types
 type FormData = {
+  id?:string,
   title: string;
   description: string;
   priority: string;
@@ -78,7 +79,7 @@ const CATEGORIES = [
 
 export default function AddTask() {
   const [loading, setLoading] = useState(false);
-  const [subtasks, setSubtasks] = useState<{ id: string; text: string }[]>([]);
+  const [subtasks, setSubtasks] = useState<{ id: string; title: string }[]>([]);
   const [currentSubtask, setCurrentSubtask] = useState("");
 
   // Visibility states for pickers
@@ -114,7 +115,7 @@ export default function AddTask() {
     if (currentSubtask.trim()) {
       setSubtasks([
         ...subtasks,
-        { id: Date.now().toString(), text: currentSubtask },
+        { id: Date.now().toString(), title: currentSubtask },
       ]);
       setCurrentSubtask("");
     }
@@ -126,7 +127,7 @@ export default function AddTask() {
     try {
       await createTaskTables();
 
-      await addTask({
+     const taskId= await addTask({
         title: data.title,
         description: data.description,
         priority: data.priority,
@@ -134,8 +135,21 @@ export default function AddTask() {
         startTime: data.startTime.toISOString(),
         endTime: data.endTime.toISOString(),
         due_date: new Date().toISOString(),
-        subtasks: subtasks,
+   
       });
+      console.log(subtasks , ' subtask');
+      //  insert subtask
+         
+    if (subtasks.length > 0) {
+      for (const sub of subtasks) {
+        await addSubTask({
+          task_id:taskId,          
+          title: sub.title,          
+          is_completed: false,     
+        });
+      }
+    }
+      
       Toast.show({
         type: "success",
         text1: "Task Created Successfully",
@@ -323,12 +337,13 @@ export default function AddTask() {
                 <Plus size={18} color="#10b981" />
               </TouchableOpacity>
             </View>
+            {/* problem *** */}
             {subtasks.map((item) => (
               <View
                 key={item.id}
                 className="flex-row items-center p-3 mb-2 border bg-white/5 rounded-xl border-white/5"
               >
-                <Text className="flex-1 text-gray-300">{item.text}</Text>
+                <Text className="flex-1 text-gray-300">{item.title}</Text>
                 <TouchableOpacity
                   onPress={() =>
                     setSubtasks(subtasks.filter((s) => s.id !== item.id))

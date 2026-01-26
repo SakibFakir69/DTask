@@ -1,60 +1,55 @@
 import { ConnectionDB } from "@/DB/database";
 
-interface ISubtask {
-  text: string;
-}
 
-interface ITask {
-  title: string;
-  description: string;
-  due_date: string;
-  priority: string;
-  category_id: string;
-  startTime: string;
-  endTime: string;
-  subtasks: ISubtask[]; 
-}
-
-export const addTask = async (task: ITask) => {
+export const addTask = async (task: any) => {
   const db = await ConnectionDB();
 
-  try {
-    // Start a transaction to ensure atomic operations
-    await db.execAsync('BEGIN TRANSACTION;');
+  if (!db) {
+    throw new Error("Database connection could not be established.");
+  }
 
-    // 1. Insert the main Task
+  try {
     const result = await db.runAsync(
-      `INSERT INTO Tasks (title, description, due_date, priority, category_id, startTime, endTime) 
-       VALUES (?, ?, ?, ?, ?, ?, ?);`,
+      `INSERT INTO Tasks (title, description, due_date, priority, category_id, startTime, endTime)
+         VALUES (?, ?, ?, ?, ?, ?, ?);`,
       [
-        task.title, 
-        task.description, 
-        task.due_date, 
-        task.priority, 
-        task.category_id, 
-        task.startTime, 
-        task.endTime
-      ]
+        task.title,
+        task.description ?? null,
+        task.due_date ?? null,
+        task.priority ?? "Medium",
+        task.category_id ?? null,
+        task.startTime ?? null,
+        task.endTime ?? null,
+      ],
     );
 
-    const taskId = result.lastInsertRowId;
-
-    // 2. Insert Subtasks if they exist
-    if (task.subtasks && task.subtasks.length > 0) {
-      for (const sub of task.subtasks) {
-        await db.runAsync(
-          `INSERT INTO Subtasks (task_id, title, is_completed) VALUES (?, ?, 0);`,
-          [taskId, sub.text]
-        );
-      }
-    }
-
-    await db.execAsync('COMMIT;');
-    console.log("Task and Subtasks added successfully!");
-    return true;
+    return result.lastInsertRowId;
   } catch (error) {
-    await db.execAsync('ROLLBACK;'); // Undo everything if one part fails
-    console.error("Error adding task transaction:", error);
+    console.error("Transaction failed:", error);
+    throw error;
+  }
+};
+
+interface ISubtasks {
+  id?: string | number;
+  task_id: string | number;
+  title: string;
+  is_completed?: boolean | number;
+}
+
+// Add a subtask
+export const addSubTask = async (subtask: ISubtasks) => {
+  try {
+    const db = await ConnectionDB();
+
+    const result = await db.runAsync(
+      `INSERT INTO Subtasks (task_id, title, is_completed) VALUES (?, ?, ?)`,
+      [subtask.task_id, subtask.title, subtask.is_completed ? true : false],
+    );
+
+    return result;
+  } catch (error) {
+    console.error("Failed to add subtask:", error);
     throw error;
   }
 };

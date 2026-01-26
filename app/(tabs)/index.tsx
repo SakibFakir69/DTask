@@ -13,7 +13,7 @@ import { TaskCard } from "../components/TaskCard";
 import { Plus, BarChart2 } from "lucide-react-native";
 import { taskUserDataRetrive } from "@/DB/modules/tasks/task.retrive";
 
-
+// delete based on swipe
 
 export default function Index() {
   const [data, setData] = useState<any[]>([]);
