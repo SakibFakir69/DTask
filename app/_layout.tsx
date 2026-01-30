@@ -7,7 +7,7 @@ import OnboardingUI from "@/onboarding/OnboardingUI";
 import { getToken } from "@/utils/authSecure";
 import { getOnboardingDone } from "@/utils/onBoarding";
 import Toast from 'react-native-toast-message';
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 type AppState = "loading" | "onboarding" | "auth" | "tabs";
 
@@ -52,8 +52,10 @@ export default function RootLayout() {
   //  App navigation
   return (
     <SafeAreaProvider>
-      <Slot />
+     <GestureHandlerRootView>
+       <Slot />
       <Toast/>
+     </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }

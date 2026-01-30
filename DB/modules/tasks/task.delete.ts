@@ -1,14 +1,18 @@
 
 import { ConnectionDB } from "@/DB/database";
 
-export const deleteTask = async (id: number) => {
+
+
+export const deleteTask = async (id: number | string) => {
   try {
     const db = await ConnectionDB();
 
     await db.runAsync(`DELETE FROM Tasks WHERE id = ?`, [id]);
 
-    console.log("Task & subtasks deleted");
+   return {success:true ,status:200}
   } catch (error) {
-    console.log(error);
+
+    return {success:false ,status:500 , err:error}
+  
   }
 };

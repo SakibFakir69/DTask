@@ -9,6 +9,7 @@ import {
   Settings,
 } from "lucide-react-native";
 import { router } from "expo-router";
+import { Swipeable } from "react-native-gesture-handler";
 
 export const TaskCard = ({
     id,
@@ -18,7 +19,8 @@ export const TaskCard = ({
   subtasks,
   completed = false,
 }: any) => (
-  <TouchableOpacity onPress={()=> router.push(`/task/${id}`)}>
+ 
+   <TouchableOpacity onPress={()=> router.push(`/task/${id}`)}>
     
     <View className="bg-[#1a3836] p-5 rounded-3xl mb-4">
       <View className="flex-row items-start justify-between">
@@ -50,4 +52,5 @@ export const TaskCard = ({
       </View>
     </View>
   </TouchableOpacity>
+
 );

@@ -1,189 +1,175 @@
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  StatusBar,
-  Alert,
-} from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { 
-  ChevronLeft, 
+  ArrowLeft, 
   Calendar, 
   Clock, 
   CheckCircle2, 
-  Circle, 
-  MoreHorizontal,
-  Sparkles,
-  Zap
+  Circle,
+  Edit3,
+  Trash2,
+  Flag,
+  ChevronRight
 } from "lucide-react-native";
-import * as Haptics from "expo-haptics";
+import { getTaskDetails } from "@/DB/modules/tasks/task.details";
+import { deleteTask } from "@/DB/modules/tasks/task.delete";
 
-// Assume your DB helpers are here
-import { getTaskWithSubtasks } from "@/DB/modules/tasks/task.details";
-import { ConnectionDB } from "@/DB/database";
-
-//  update ( complete task)
-// put subtask and title
-// delete task 
-// think ui 
-
-
-export default function TaskDetailsScreen() {
+export default function TaskDetails() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
-  
-  const [data, setData] = useState<any>(null);
-  const [subtasks, setSubtasks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Brand Colors
-  const COLORS = {
-    primaryDark: "#0F2321",
-    accentTeal: "#00A897",
-    accentLight: "#E6F6F5",
-  };
+  const [task, setTask] = useState<any>(null);
 
   useEffect(() => {
-    fetchTaskData();
+    const fetchData = async () => {
+      const result = await getTaskDetails(id as string);
+      setTask(result);
+    };
+    fetchData();
   }, [id]);
 
-  const fetchTaskData = async () => {
-    try {
-      setLoading(true);
-      const taskId = Array.isArray(id) ? id[0] : id;
-      const result = (await getTaskWithSubtasks(String(taskId))) as any[];
-
-      if (result && result.length > 0) {
-        setData(result[0]);
-        const extracted = result
-          .filter((row) => row.subtask_id !== null)
-          .map((row) => ({
-            id: row.subtask_id,
-            title: row.subtask_title,
-            completed: row.subtask_completed === 1,
-          }));
-        setSubtasks(extracted);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  // --- CRUD Operations ---
+  
+  const handleEdit = () => {
+    // Navigate to your edit screen or open an edit modal
+    // router.push(`/edit-task/${id}`);
+    Alert.alert("Edit Mode", "Navigate to edit screen or open modal here.");
   };
 
-  const toggleSubtask = async (subtaskId: number, currentState: boolean) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      const db = await ConnectionDB();
-      await db.runAsync("UPDATE Subtasks SET is_completed = ? WHERE id = ?", [currentState ? 0 : 1, subtaskId]);
-      setSubtasks(prev => prev.map(s => s.id === subtaskId ? { ...s, completed: !currentState } : s));
-    } catch (e) {
-      Alert.alert("Error", "Update failed");
-    }
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Task",
+      "Are you sure you want to permanently delete this task?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive", 
+          onPress: () => {
+          const isDelete=  deleteTask(id as string);
+          console.log(isDelete)
+            
+            router.back();
+          } 
+        }
+      ]
+    );
   };
 
-  const progress = subtasks.length > 0 
-    ? Math.round((subtasks.filter(s => s.completed).length / subtasks.length) * 100) 
-    : 0;
-
-  if (loading) return (
-    <View className="items-center justify-center flex-1 bg-white">
-      <ActivityIndicator size="large" color={COLORS.accentTeal} />
+  if (!task) return (
+    <View className="flex-1 bg-[#0A0A0A] items-center justify-center">
+      <Text className="text-gray-500 animate-pulse">Loading task details...</Text>
     </View>
   );
 
+  const completedSubtasks = task.subtasks?.filter((s: any) => s.is_completed).length || 0;
+  const totalSubtasks = task.subtasks?.length || 0;
+  const progress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
+
   return (
-    <View className="flex-1 bg-[#090D19]">
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView className="flex-1 bg-[#0A0A0A]">
+      <StatusBar barStyle="light-content" />
       
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pb-4 pt-14">
+      {/* Header with Management Actions */}
+      <View className="flex-row items-center justify-between px-6 py-10 border-b border-white/5">
         <TouchableOpacity 
-          onPress={() => router.back()}
-          className="items-center justify-center w-10 h-10 rounded-2xl bg-slate-50"
+          onPress={() => router.back()} 
+          className="items-center justify-center w-10 h-10 rounded-full bg-white/5"
         >
-          <ChevronLeft size={22} color={COLORS.primaryDark} />
+          <ArrowLeft color="#fff" size={20} />
         </TouchableOpacity>
-        <Text  className="text-lg font-bold text-emerald-400">Details</Text>
-      
+        
+        <View className="flex-row space-x-2">
+          <TouchableOpacity 
+            onPress={handleEdit}
+            className="items-center justify-center w-10 h-10 rounded-full bg-white/5"
+          >
+            <Edit3 color="#108b7f" size={18} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            onPress={handleDelete}
+            className="items-center justify-center w-10 h-10 rounded-full bg-red-500/10"
+          >
+            <Trash2 color="#ef4444" size={18} />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
-        
-        {/* Priority Badge & Title */}
-        <View className="px-6 mt-4">
-          <View style={{ backgroundColor: COLORS.accentLight }} className="self-start px-3 py-1 mb-3 rounded-full">
-            <Text style={{ color: COLORS.accentTeal }} className="text-[10px] font-black uppercase tracking-widest">
-              {data?.priority} Priority
-            </Text>
+      <ScrollView className="px-6" showsVerticalScrollIndicator={false}>
+        {/* Title & Description Section */}
+        <View className="mt-8">
+          <View className="flex-row items-center mb-3">
+            <View className={`px-3 py-1 rounded-lg ${task.priority === 'High' ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
+              <Text className={`text-[10px] font-bold uppercase tracking-tighter ${task.priority === 'High' ? 'text-red-400' : 'text-emerald-400'}`}>
+                {task.priority} Priority
+              </Text>
+            </View>
+            <View className="w-1 h-1 mx-2 rounded-full bg-white/20" />
+            <Text className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">#{task.id}</Text>
           </View>
-          <Text  className="text-3xl font-bold tracking-tight text-white">
-            {data?.title || "not founed"}
+          
+          <Text className="text-4xl font-bold leading-tight text-white">{task.title}</Text>
+          <Text className="mt-4 text-base leading-6 text-gray-400/80">
+            {task.description || "No description provided for this task."}
           </Text>
-
-          {/* Progress Card - Using #0F2321 */}
-          <View  className="mt-6 bg-[#285c59] p-6 rounded-[32px] shadow-xl shadow-black/20">
-            <View className="flex-row items-center justify-between mb-6">
-              <View>
-                <Text className="text-xs font-bold tracking-wider uppercase text-slate-400">Completion</Text>
-                <Text className="mt-1 text-4xl font-black text-white">{progress}%</Text>
-              </View>
-              <View style={{ backgroundColor: 'rgba(0, 168, 151, 0.2)' }} className="p-4 rounded-3xl">
-                <Zap color={COLORS.accentTeal} size={28} fill={COLORS.accentTeal} />
-              </View>
-            </View>
-            <View className="w-full h-3 overflow-hidden rounded-full bg-white/10">
-              <View style={{ width: `${progress}%`, backgroundColor: COLORS.accentTeal }} className="h-full rounded-full" />
-            </View>
-          </View>
         </View>
 
-        {/* Schedule Grid */}
-        <View className="flex-row w-full gap-4 px-6 m-4 ">
-          
-          <View className="flex-1 p-4  bg-[#285c59] rounded-3xl ">
-            <Calendar size={20} color={COLORS.accentTeal} />
-            <Text className="text-white text-[10px] font-bold uppercase mt-3">Due Date</Text>
-            <Text style={{ color: COLORS.primaryDark }} className="mt-1 font-bold">
-              {new Date(data?.due_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+        {/* Info Grid */}
+        <View className="flex-row mt-8 space-x-4">
+          <View className="flex-1 p-4 border bg-white/5 border-white/10 rounded-3xl">
+            <View className="flex-row items-center mb-2">
+              <Calendar color="#108b7f" size={16} />
+              <Text className="ml-2 text-xs font-bold text-gray-500 uppercase">Deadline</Text>
+            </View>
+            <Text className="text-base font-semibold text-white">
+              {new Date(task.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
             </Text>
           </View>
-          
-          <View className="flex-1 p-4 border bg-[#285c59] rounded-3xl ">
-            <Clock size={20} color={COLORS.accentTeal} />
-            <Text className="text-white text-[10px] font-bold uppercase mt-3">Time</Text>
-            <Text style={{ color: COLORS.primaryDark }} className="mt-1 font-bold">
-              {new Date(data?.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+
+          <View className="flex-1 p-4 border bg-white/5 border-white/10 rounded-3xl">
+            <View className="flex-row items-center mb-2">
+              <Flag color="#108b7f" size={16} />
+              <Text className="ml-2 text-xs font-bold text-gray-500 uppercase">Status</Text>
+            </View>
+            <Text className="text-base font-semibold text-white">
+              {progress === 100 ? 'Completed' : 'Active'}
             </Text>
           </View>
         </View>
 
-       
+        {/* Progress Card */}
+        <View className="mt-6 overflow-hidden bg-[#286b65] rounded-[32px] p-6">
+          <View className="flex-row items-center justify-between mb-6">
+            <View>
+              <Text className="text-2xl font-bold text-white">Task Progress</Text>
+              <Text className="font-medium text-yellow-200/60">{completedSubtasks} of {totalSubtasks} steps done</Text>
+            </View>
+            <Text className="text-3xl font-black text-white">{Math.round(progress)}%</Text>
+          </View>
+          <View className="w-full h-4 overflow-hidden rounded-full bg-black/20">
+            <View style={{ width: `${progress}%` }} className="h-full bg-yellow-400 rounded-full" />
+          </View>
+        </View>
 
-        {/* Checklist */}
-        <View className="px-6 mt-8">
-          <Text  className="mb-4 text-xl font-bold text-white">Subtasks</Text>
-          
-          {subtasks.map((sub) => (
+        {/* Subtasks Section */}
+        <View className="mt-10 mb-32">
+          <Text className="mb-6 text-xl font-bold text-white">Subtasks</Text>
+          {task.subtasks?.map((sub: any) => (
             <TouchableOpacity 
-              key={sub.id}
-              onPress={() => toggleSubtask(sub.id, sub.completed)}
-              activeOpacity={0.8}
-              className={`flex-row items-center p-5 mb-4 rounded-3xl text-white ${
-                sub.completed ? 'bg-slate-500 text-white' : 'bg-[#1a3836] border text-white  shadow-sm '
-              }`}
+              key={sub.id} 
+              activeOpacity={0.7}
+              className={`flex-row items-center p-5 mb-3 rounded-2xl border ${sub.is_completed ? 'bg-[#1a3836]' : 'bg-[#2d716b] border-white/10'}`}
             >
-              {sub.completed ? (
-                <CheckCircle2 size={24} color={COLORS.accentTeal} />
-              ) : (
-                <Circle size={24} color="#CBD5E1" />
-              )}
-              <Text className={`ml-4 flex-1 font-semibold text-[16px] ${
-                sub.completed ? 'text-slate-300 line-through' : 'text-white'
-              }`}>
+              <View className="mr-4">
+                {sub.is_completed ? (
+                  <View className="items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20">
+                    <CheckCircle2 color="#34d399" size={18} />
+                  </View>
+                ) : (
+                  <Circle color="white" size={22} />
+                )}
+              </View>
+              <Text className={`flex-1 text-base font-medium ${sub.is_completed ? 'text-gray-500 line-through' : 'text-gray-100'}`}>
                 {sub.title}
               </Text>
             </TouchableOpacity>
@@ -192,15 +178,11 @@ export default function TaskDetailsScreen() {
       </ScrollView>
 
       {/* Primary Action Button */}
-      <View className="absolute left-0 right-0 px-6 bottom-10">
-        <TouchableOpacity 
-          
-          className="flex-row items-center bg-emerald-500 justify-center h-18 py-5 rounded-[24px]"
-        >
-          <Sparkles size={22} color="white" />
-          <Text className="ml-3 text-lg font-black tracking-widest text-white uppercase">Complete Task</Text>
+      <View className="absolute bottom-10 left-6 right-6">
+        <TouchableOpacity className="w-full bg-[#108b7f] py-4 rounded-2xl shadow-xl shadow-emerald-900/40 items-center justify-center">
+          <Text className="text-lg font-bold text-white">Mark as Fully Complete</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

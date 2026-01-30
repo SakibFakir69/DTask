@@ -101,6 +101,8 @@ export default function Index() {
             />
           )}
           
+          //  renderRightActions={() =>console.log("dsf")}
+           
           ListEmptyComponent={
             <View>
               <Text className="mt-10 text-center text-gray-500">
