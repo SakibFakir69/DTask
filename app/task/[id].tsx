@@ -14,7 +14,7 @@ import {
 } from "lucide-react-native";
 import { getTaskDetails } from "@/DB/modules/tasks/task.details";
 import { deleteTask } from "@/DB/modules/tasks/task.delete";
-
+import Toast from "react-native-toast-message";
 export default function TaskDetails() {
   const { id } = useLocalSearchParams();
   const [task, setTask] = useState<any>(null);
@@ -35,25 +35,45 @@ export default function TaskDetails() {
     Alert.alert("Edit Mode", "Navigate to edit screen or open modal here.");
   };
 
-  const handleDelete = () => {
-    Alert.alert(
-      "Delete Task",
-      "Are you sure you want to permanently delete this task?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Delete", 
-          style: "destructive", 
-          onPress: () => {
-          const isDelete=  deleteTask(id as string);
-          console.log(isDelete)
-            
+ const handleDelete = () => {
+  Alert.alert(
+    "Delete Task",
+    "Are you sure you want to permanently delete this task?",
+    [
+      { text: "Cancel", style: "cancel" },
+      { 
+        text: "Delete", 
+        style: "destructive", 
+        onPress: async () => {
+          try {
+            //  Perform the deletion
+            await deleteTask(id as string);
+
+            // Navigate back first (or simultaneously)
             router.back();
-          } 
-        }
-      ]
-    );
-  };
+
+            // Show success toast
+            Toast.show({
+              type: 'success',
+              text1: 'Task Deleted',
+              text2: 'The task has been removed successfully. 👋',
+              position: 'bottom', 
+              visibilityTime: 3000,
+            });
+          } catch (error) {
+           
+            Toast.show({
+              type: 'error',
+              text1: 'Delete Failed',
+              text2: 'Something went wrong. Please try again.',
+            });
+          }
+        } 
+      }
+    ]
+  );
+};
+  
 
   if (!task) return (
     <View className="flex-1 bg-[#0A0A0A] items-center justify-center">

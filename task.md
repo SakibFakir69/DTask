@@ -11,5 +11,5 @@ BUILDING MY DREAM NOT JUST SIMPLE PROJECT -> INSHALLA SUCCSSFULLY FINISHED
 2. then auth page
 
 
-<!-- 1/19/26 -->
-<!-- add task  -> db -> details -> notification/alaram/message time finished -->
+<!-- 1/31/2026 -->
+<!-- make delete toast , add task issue fix and , task update -->
